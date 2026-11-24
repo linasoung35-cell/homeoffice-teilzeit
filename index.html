@@ -6,7 +6,7 @@
   <meta name="description" content="Homeoffice-Teilzeit: Stellenangebot Mitarbeiter/in (m/w/d) im Homeoffice Minijob Teilzeit Nebenjob deutschlandweit. Flexible Arbeit im Online-Verkauf.">
   <meta name="robots" content="index,follow">
   <title>Mitarbeiter/in (m/w/d) im Homeoffice Minijob Teilzeit Nebenjob Deutschlandweit | Homeoffice-Teilzeit</title>
-  <link rel="canonical" href="https://homeoffice-teilzeit.pages.dev/">
+  <link rel="canonical" href="https://homeoffice-teilzeit-portal.pages.dev/">
   <link rel="stylesheet" href="style.css">
   <script type="application/ld+json">
   {
@@ -31,7 +31,6 @@
     .visitor-counter small{display:block;font-size:12px;color:#6d675b;margin-top:3px}
     .visitor-note{max-width:620px;margin:9px auto 0;font-size:12px;color:#777}
 
-    /* Bewerbungsformular */
     .contact-form{margin-top:22px;padding:22px;border:1px solid #e5dfd2;border-radius:12px;background:#fffdf9}
     .contact-form h3{margin-top:0}
     .contact-form .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -140,14 +139,51 @@
   </div>
 </section>
 <script>
+function esc(v){
+  return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 (async function(){
  const list=document.getElementById('approved-listings');
- try { const r=await fetch('/api/listings'); const data=await r.json();
+ try {
+   const r=await fetch('/api/listings');
+   const data=await r.json();
    if(!r.ok) throw new Error();
-   if(!data.items.length){list.innerHTML='<p>Noch keine freigegebenen Anzeigen.</p>';return;}
-   list.innerHTML=data.items.map(x=>`<article class="public-listing"><h3>${esc(x.title)}</h3><p><strong>${esc(x.category)}</strong> · ${esc(x.location)}</p><p>${esc(x.description).replace(/\n/g,'<br>')}</p><p>Kontakt: <a href="mailto:${encodeURIComponent(x.email)}">${esc(x.email)}</a></p></article>`).join('');
- } catch(e){list.innerHTML='<p>Anzeigen konnten gerade nicht geladen werden.</p>';}
- function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+   if(!data.items.length){
+     list.innerHTML='<p>Noch keine freigegebenen Anzeigen.</p>';
+     return;
+   }
+   list.innerHTML=data.items.map(x=>`
+     <article class="public-listing">
+       <h3>${esc(x.title)}</h3>
+       <p><strong>${esc(x.category)}</strong> · ${esc(x.location)}</p>
+       <p>${esc(x.description).replace(/\n/g,'<br>')}</p>
+       <form class="contact-form dynamic-contact-form">
+         <h3>Kontakt / Bewerbung</h3>
+         <input type="hidden" name="access_key" value="22d33330-6e1b-4706-920c-6ae9ef01c109">
+         <input type="hidden" name="subject" value="Anfrage zur Anzeige: ${esc(x.title)}">
+         <input type="hidden" name="from_name" value="Homeoffice-Teilzeit Webseite">
+         <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off">
+         <div class="form-grid">
+           <label>Dein Name *
+             <input type="text" name="name" required maxlength="120" placeholder="Vor- und Nachname">
+           </label>
+           <label>Deine E-Mail-Adresse *
+             <input type="email" name="email" required maxlength="254" placeholder="name@beispiel.de">
+           </label>
+           <label class="full-width">Nachricht *
+             <textarea name="message" required maxlength="5000" placeholder="Schreibe hier deine Nachricht …"></textarea>
+           </label>
+         </div>
+         <button class="button" type="submit">Nachricht senden</button>
+         <p class="contact-form-status" role="status" aria-live="polite"></p>
+       </form>
+       <p>Kontakt-E-Mail des Anbieters: <a href="mailto:${encodeURIComponent(x.email)}">${esc(x.email)}</a></p>
+     </article>
+   `).join('');
+ } catch(e){
+   list.innerHTML='<p>Anzeigen konnten gerade nicht geladen werden.</p>';
+ }
 })();
 
 document.getElementById('contact-form').addEventListener('submit',async e=>{
@@ -175,13 +211,58 @@ document.getElementById('contact-form').addEventListener('submit',async e=>{
   }
 });
 
+/* Funktion für alle automatisch erzeugten Community-Kontaktformulare */
+document.addEventListener('submit',async e=>{
+  const form=e.target;
+  if(!form.matches('.dynamic-contact-form')) return;
+
+  e.preventDefault();
+  const status=form.querySelector('.contact-form-status');
+  const button=form.querySelector('button[type="submit"]');
+  status.textContent='Nachricht wird gesendet …';
+  button.disabled=true;
+
+  try{
+    const response=await fetch('https://api.web3forms.com/submit',{
+      method:'POST',
+      body:new FormData(form)
+    });
+    const result=await response.json();
+    if(!response.ok || !result.success){
+      throw new Error(result.message || 'Die Nachricht konnte nicht gesendet werden.');
+    }
+    form.reset();
+    status.textContent='Vielen Dank! Deine Nachricht wurde erfolgreich gesendet.';
+  }catch(error){
+    status.textContent=error.message || 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.';
+  }finally{
+    button.disabled=false;
+  }
+});
+
 document.getElementById('listing-form').addEventListener('submit',async e=>{
- e.preventDefault(); const f=e.currentTarget, status=document.getElementById('listing-form-status'), b=f.querySelector('button');
- status.textContent='Wird gesendet …'; b.disabled=true;
- const fd=new FormData(f); const body=Object.fromEntries(fd.entries()); body.consent=fd.get('consent')==='on';
- try{const r=await fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();
- if(!r.ok) throw new Error(d.error||'Senden fehlgeschlagen'); f.reset(); status.textContent='Danke! Deine Anzeige wurde eingereicht und wartet auf Freigabe.';
- }catch(err){status.textContent=err.message||'Fehler beim Senden. Bitte später erneut versuchen.';}finally{b.disabled=false;}
+ e.preventDefault();
+ const f=e.currentTarget, status=document.getElementById('listing-form-status'), b=f.querySelector('button');
+ status.textContent='Wird gesendet …';
+ b.disabled=true;
+ const fd=new FormData(f);
+ const body=Object.fromEntries(fd.entries());
+ body.consent=fd.get('consent')==='on';
+ try{
+   const r=await fetch('/api/submit',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify(body)
+   });
+   const d=await r.json();
+   if(!r.ok) throw new Error(d.error||'Senden fehlgeschlagen');
+   f.reset();
+   status.textContent='Danke! Deine Anzeige wurde eingereicht und wartet auf Freigabe.';
+ }catch(err){
+   status.textContent=err.message||'Fehler beim Senden. Bitte später erneut versuchen.';
+ }finally{
+   b.disabled=false;
+ }
 });
 </script>
 </body>
