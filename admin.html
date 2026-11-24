@@ -1,8 +1,211 @@
-<!doctype html><html lang="de"><head><meta name="robots" content="noindex,nofollow"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Anzeigen freigeben | Admin</title><link rel="stylesheet" href="style.css"><style>body{font-family:system-ui,sans-serif;padding:24px}.admin-wrap{max-width:850px;margin:auto}.admin-card{border:1px solid #ddd;border-radius:12px;padding:18px;margin:16px 0}.admin-card button{padding:10px 14px;margin:8px 8px 0 0}.login{display:grid;gap:12px;max-width:420px}.login input{padding:12px}</style></head><body><main class="admin-wrap"><h1>Anzeige-Freigabe</h1><p>Dieser Bereich ist nur für die Website-Betreiberin.</p><form id="login" class="login"><label>Admin-Passwort<input type="password" name="password" required autocomplete="current-password"></label><button>Anmelden</button></form><p id="status" role="status"></p><section id="queue"></section><button id="logout" hidden>Abmelden</button></main><script>
-const status=document.getElementById('status'),queue=document.getElementById('queue'),login=document.getElementById('login'),logout=document.getElementById('logout');
-login.addEventListener('submit',async e=>{e.preventDefault();status.textContent='Anmeldung …';try{const r=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:new FormData(login).get('password')})});const d=await r.json();if(!r.ok)throw Error(d.error);login.hidden=true;logout.hidden=false;await load();}catch(err){status.textContent=err.message;}});
-async function load(){try{const r=await fetch('/api/admin/listings');const d=await r.json();if(!r.ok)throw Error(d.error);queue.innerHTML=d.items.length?d.items.map(x=>`<article class="admin-card"><h2>${esc(x.title)}</h2><p>${esc(x.category)} · ${esc(x.location)}</p><p>${esc(x.description)}</p><p>${esc(x.email)}</p><button data-id="${x.id}" data-status="approved">Freigeben</button><button data-id="${x.id}" data-status="rejected">Ablehnen</button></article>`).join(''):'<p>Keine Anzeigen zur Prüfung.</p>';status.textContent='';}catch(e){status.textContent=e.message;}}
-queue.addEventListener('click',async e=>{const b=e.target.closest('button[data-id]');if(!b)return;b.disabled=true;try{const r=await fetch('/api/admin/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:Number(b.dataset.id),status:b.dataset.status})});const d=await r.json();if(!r.ok)throw Error(d.error);await load();}catch(err){status.textContent=err.message;b.disabled=false;}});
-logout.addEventListener('click',async()=>{await fetch('/api/admin/logout',{method:'POST'});login.hidden=false;logout.hidden=true;queue.innerHTML='';status.textContent='Abgemeldet.';});
-function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-</script></body></html>
+
+<!doctype html>
+<html lang="de">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anzeigen freigeben | Admin</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 24px;
+    }
+
+    .admin-wrap {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .admin-card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .admin-card button {
+      padding: 10px 14px;
+      margin: 8px 8px 0 0;
+    }
+
+    .login {
+      display: grid;
+      gap: 12px;
+      max-width: 420px;
+    }
+
+    .login input {
+      padding: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="admin-wrap">
+    <h1>Anzeige-Freigabe</h1>
+
+    <p>
+      Dieser Bereich ist nur für die Website-Betreiberin.
+    </p>
+
+    <form id="login" class="login">
+      <label>
+        Admin-Passwort
+        <input
+          type="password"
+          name="password"
+          required
+          autocomplete="current-password"
+        >
+      </label>
+
+      <button type="submit">Anmelden</button>
+    </form>
+
+    <p id="status" role="status"></p>
+
+    <section id="queue"></section>
+
+    <button id="logout" hidden>Abmelden</button>
+  </main>
+
+  <script>
+    const status = document.getElementById('status');
+    const queue = document.getElementById('queue');
+    const login = document.getElementById('login');
+    const logout = document.getElementById('logout');
+
+    login.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      status.textContent = 'Anmeldung …';
+
+      try {
+        const r = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            password: new FormData(login).get('password')
+          })
+        });
+
+        const d = await r.json();
+
+        if (!r.ok) {
+          throw Error(d.error);
+        }
+
+        login.hidden = true;
+        logout.hidden = false;
+
+        await load();
+      } catch (err) {
+        status.textContent = err.message;
+      }
+    });
+
+    async function load() {
+      try {
+        const r = await fetch('/api/admin/listings');
+        const d = await r.json();
+
+        if (!r.ok) {
+          throw Error(d.error);
+        }
+
+        queue.innerHTML = d.items.length
+          ? d.items.map(x => `
+              <article class="admin-card">
+                <h2>${esc(x.title)}</h2>
+
+                <p>
+                  ${esc(x.category)} · ${esc(x.location)}
+                </p>
+
+                <p>${esc(x.description)}</p>
+
+                <p>${esc(x.email)}</p>
+
+                <button
+                  data-id="${x.id}"
+                  data-action="approve"
+                >
+                  Freigeben
+                </button>
+
+                <button
+                  data-id="${x.id}"
+                  data-action="reject"
+                >
+                  Ablehnen
+                </button>
+              </article>
+            `).join('')
+          : '<p>Keine Anzeigen zur Prüfung.</p>';
+
+        status.textContent = '';
+      } catch (e) {
+        status.textContent = e.message;
+      }
+    }
+
+    queue.addEventListener('click', async e => {
+      const b = e.target.closest('button[data-id]');
+
+      if (!b) return;
+
+      b.disabled = true;
+
+      try {
+        const r = await fetch('/api/admin/decision', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: Number(b.dataset.id),
+            action: b.dataset.action
+          })
+        });
+
+        const d = await r.json();
+
+        if (!r.ok) {
+          throw Error(d.error);
+        }
+
+        await load();
+      } catch (err) {
+        status.textContent = err.message;
+        b.disabled = false;
+      }
+    });
+
+    logout.addEventListener('click', async () => {
+      await fetch('/api/admin/logout', {
+        method: 'POST'
+      });
+
+      login.hidden = false;
+      logout.hidden = true;
+      queue.innerHTML = '';
+      status.textContent = 'Abgemeldet.';
+    });
+
+    function esc(v) {
+      return String(v || '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[c]));
+    }
+  </script>
+</body>
+</html>
