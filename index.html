@@ -30,6 +30,20 @@
     .visitor-counter strong{display:block;font-size:24px;line-height:1.2}
     .visitor-counter small{display:block;font-size:12px;color:#6d675b;margin-top:3px}
     .visitor-note{max-width:620px;margin:9px auto 0;font-size:12px;color:#777}
+
+    /* Bewerbungsformular */
+    .contact-form{margin-top:22px;padding:22px;border:1px solid #e5dfd2;border-radius:12px;background:#fffdf9}
+    .contact-form h3{margin-top:0}
+    .contact-form .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .contact-form label{display:block;font-weight:600;font-size:14px;color:#292720}
+    .contact-form input,.contact-form textarea{display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:12px 13px;border:1px solid #d7d2c8;border-radius:8px;background:#fff;color:#24211b;font:inherit}
+    .contact-form textarea{min-height:140px;resize:vertical}
+    .contact-form .full-width{grid-column:1/-1}
+    .contact-form button{margin-top:16px;border:0;cursor:pointer;font:inherit}
+    .contact-form button:disabled{opacity:.65;cursor:wait}
+    .contact-form-status{min-height:1.4em;margin:12px 0 0;font-size:14px}
+    .contact-form .hp-field{position:absolute!important;left:-5000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+    @media(max-width:600px){.contact-form{padding:16px}.contact-form .form-grid{grid-template-columns:1fr}.contact-form .full-width{grid-column:auto}}
   </style>
 </head>
 <body>
@@ -63,12 +77,39 @@
         <h3>Das solltest du mitbringen</h3>
         <ul><li>Mindestalter 18 Jahre</li><li>Zuverlässigkeit und Verantwortungsbewusstsein</li><li>Freundliche und schriftlich sichere Kommunikation</li><li>Selbstständige und strukturierte Arbeitsweise</li><li>Smartphone, Tablet oder Computer</li><li>Stabile Internetverbindung</li><li>Motivation und Interesse am Online-Verkauf</li></ul>
         <p>Vorkenntnisse sind nicht erforderlich. Quereinsteiger und Quereinsteigerinnen sind herzlich willkommen.</p>
-        <div class="apply"><h3>Bewerbung</h3><p>Wenn du Interesse an dieser Tätigkeit hast, freuen wir uns auf deine schriftliche Bewerbung.</p><a class="button" href="mailto:lina.soung35@gmail.com?subject=Bewerbung%20Homeoffice-Teilzeit">Per E-Mail bewerben</a><p class="email">lina.soung35@gmail.com</p></div>
+
+        <div class="apply">
+          <h3>Bewerbung</h3>
+          <p>Wenn du Interesse an dieser Tätigkeit hast, freuen wir uns auf deine schriftliche Bewerbung. Nutze dafür einfach das folgende Formular.</p>
+          <form id="contact-form" class="contact-form">
+            <input type="hidden" name="access_key" value="22d33330-6e1b-4706-920c-6ae9ef01c109">
+            <input type="hidden" name="subject" value="Neue Bewerbung über Homeoffice-Teilzeit">
+            <input type="hidden" name="from_name" value="Homeoffice-Teilzeit Webseite">
+            <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off">
+            <div class="form-grid">
+              <label>Name *
+                <input type="text" name="name" autocomplete="name" required maxlength="120" placeholder="Vor- und Nachname">
+              </label>
+              <label>E-Mail-Adresse *
+                <input type="email" name="email" autocomplete="email" required maxlength="254" placeholder="name@beispiel.de">
+              </label>
+              <label class="full-width">Betreff *
+                <input type="text" name="message_subject" required maxlength="160" value="Bewerbung für die Homeoffice-Stelle">
+              </label>
+              <label class="full-width">Nachricht *
+                <textarea name="message" required maxlength="5000" placeholder="Schreibe hier deine Nachricht oder kurze Bewerbung …"></textarea>
+              </label>
+            </div>
+            <button class="button" type="submit">Nachricht senden</button>
+            <p id="contact-form-status" class="contact-form-status" role="status" aria-live="polite"></p>
+          </form>
+          <p class="email">Kontakt: lina.soung35@gmail.com</p>
+        </div>
         <p class="employer">Arbeitgeber: Lina Soung</p>
       </div>
     </article>
   </section>
-  <section class="info" id="arbeitgeber"><div class="eyebrow">Homeoffice-Teilzeit</div><h2>Flexibel arbeiten. Deutschlandweit.</h2><p>Diese Stellenanzeige wird vom Arbeitgeber bereitgestellt. Bitte richte deine Bewerbung direkt an die angegebene E-Mail-Adresse.</p></section>
+  <section class="info" id="arbeitgeber"><div class="eyebrow">Homeoffice-Teilzeit</div><h2>Flexibel arbeiten. Deutschlandweit.</h2><p>Diese Stellenanzeige wird vom Arbeitgeber bereitgestellt. Bewerbungen können direkt über das Formular auf dieser Seite gesendet werden.</p></section>
 
   <section class="visitor-section" aria-label="Besucherzähler">
     <script src="https://www.stats4u.net/s4u.js" data-id="9316708482" data-style="2009" async></script>
@@ -108,6 +149,32 @@
  } catch(e){list.innerHTML='<p>Anzeigen konnten gerade nicht geladen werden.</p>';}
  function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 })();
+
+document.getElementById('contact-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const form=e.currentTarget;
+  const status=document.getElementById('contact-form-status');
+  const button=form.querySelector('button[type="submit"]');
+  status.textContent='Nachricht wird gesendet …';
+  button.disabled=true;
+  try{
+    const response=await fetch('https://api.web3forms.com/submit',{
+      method:'POST',
+      body:new FormData(form)
+    });
+    const result=await response.json();
+    if(!response.ok || !result.success){
+      throw new Error(result.message || 'Die Nachricht konnte nicht gesendet werden.');
+    }
+    form.reset();
+    status.textContent='Vielen Dank! Deine Nachricht wurde erfolgreich gesendet.';
+  }catch(error){
+    status.textContent=error.message || 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.';
+  }finally{
+    button.disabled=false;
+  }
+});
+
 document.getElementById('listing-form').addEventListener('submit',async e=>{
  e.preventDefault(); const f=e.currentTarget, status=document.getElementById('listing-form-status'), b=f.querySelector('button');
  status.textContent='Wird gesendet …'; b.disabled=true;
@@ -117,8 +184,5 @@ document.getElementById('listing-form').addEventListener('submit',async e=>{
  }catch(err){status.textContent=err.message||'Fehler beim Senden. Bitte später erneut versuchen.';}finally{b.disabled=false;}
 });
 </script>
-
-
-
 </body>
 </html>
