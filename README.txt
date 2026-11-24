@@ -33,3 +33,4 @@ Die Datei googlea3d7b333e564616d.html muss im Stammverzeichnis (Root) der Websit
 WICHTIG:
 - Keine Domain wird gekauft oder benötigt; verwendet wird die kostenlose pages.dev-Adresse.
 - Der CounterAPI-Dienst ist ein externer Anbieter. Die Funktion wird nach dem Deployment auf der Live-Website getestet.
+Deployment-Aktualisierung
