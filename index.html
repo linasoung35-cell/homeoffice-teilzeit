@@ -142,6 +142,11 @@ function esc(v){
   return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+/* E-Mail-Adressen in öffentlichen Beschreibungstexten ausblenden */
+function hideEmails(v){
+  return esc(v).replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[E-Mail-Adresse ausgeblendet]');
+}
+
 (async function(){
  const list=document.getElementById('approved-listings');
  try {
@@ -156,7 +161,7 @@ function esc(v){
      <article class="public-listing">
        <h3>${esc(x.title)}</h3>
        <p><strong>${esc(x.category)}</strong> · ${esc(x.location)}</p>
-       <p>${esc(x.description).replace(/\n/g,'<br>')}</p>
+       <p>${hideEmails(x.description).replace(/\n/g,'<br>')}</p>
        <form class="contact-form dynamic-contact-form">
          <h3>Kontakt / Bewerbung</h3>
          <input type="hidden" name="access_key" value="22d33330-6e1b-4706-920c-6ae9ef01c109">
