@@ -64,7 +64,11 @@ export async function onRequestGet({ env, params }) {
       ? new Date().toISOString().slice(0, 10)
       : parsedDate.toISOString().slice(0, 10);
 
-    const isRemote = /homeoffice|remote|deutschlandweit/i.test(location);
+    // Homeoffice auch in Titel und Beschreibung erkennen
+    const isRemote =
+      /homeoffice|home-office|remote|deutschlandweit/i.test(
+        [title, location, description].join(' ')
+      );
 
     const jobPosting = {
       '@context': 'https://schema.org',
@@ -86,7 +90,7 @@ export async function onRequestGet({ env, params }) {
       jobPosting.jobLocationType = 'TELECOMMUTE';
       jobPosting.applicantLocationRequirements = {
         '@type': 'Country',
-        name: 'Germany'
+        name: 'DE'
       };
     }
 
