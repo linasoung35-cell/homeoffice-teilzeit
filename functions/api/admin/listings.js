@@ -7,7 +7,7 @@ export async function onRequestGet({request,env}) {
 
   try {
     const {results=[]} = await env.DB.prepare(
-      "SELECT * FROM listings WHERE status='pending' ORDER BY created_at ASC"
+      "SELECT * FROM listings WHERE status IN ('pending','approved') ORDER BY created_at ASC"
     ).all();
 
     return json({items:results});
