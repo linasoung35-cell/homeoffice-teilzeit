@@ -189,13 +189,22 @@
                 </button>
 
                 ${x.status === 'pending' ? `
-                  <button type="button" data-id="${Number(x.id)}" data-action="approve">
-                    Freigeben
-                  </button>
-                  <button type="button" data-id="${Number(x.id)}" data-action="reject">
-                    Ablehnen
-                  </button>
-                ` : ''}
+  <button type="button" data-id="${Number(x.id)}" data-action="approve">
+    Freigeben
+  </button>
+  <button type="button" data-id="${Number(x.id)}" data-action="reject">
+    Ablehnen
+  </button>
+` : `
+  <button
+    type="button"
+    data-id="${Number(x.id)}"
+    data-action="delete"
+    style="background:#b91c1c;color:white"
+  >
+    Löschen
+  </button>
+`}
               </article>
             `).join('')
           : '<p>Keine Anzeigen vorhanden.</p>';
@@ -226,9 +235,15 @@
       }
 
       const b = e.target.closest('button[data-id]');
-      if (!b) return;
+if (!b) return;
 
-      b.disabled = true;
+if (b.dataset.action === 'delete') {
+  if (!confirm('Möchtest du diese Anzeige wirklich dauerhaft löschen?')) {
+    return;
+  }
+}
+
+b.disabled = true;
 
       try {
         const r = await fetch('/api/admin/decision', {
