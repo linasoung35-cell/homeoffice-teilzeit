@@ -20,11 +20,11 @@ export async function onRequestPost({request,env}) {
 
     if (action === 'delete') {
       const result = await env.DB.prepare(
-        "DELETE FROM listings WHERE id=? AND status='approved'"
+        "DELETE FROM listings WHERE id=? AND status='approved' AND is_primary=0"
       ).bind(id).run();
 
       if (!result.meta || result.meta.changes === 0) {
-        return json({error:'Anzeige nicht gefunden'},404);
+        return json({error:'Anzeige nicht gefunden oder nicht löschbar'},404);
       }
 
       return json({ok:true});
@@ -33,7 +33,7 @@ export async function onRequestPost({request,env}) {
     const status = action === 'approve' ? 'approved' : 'rejected';
 
     await env.DB.prepare(
-      'UPDATE listings SET status=? WHERE id=? AND status=?'
+      'UPDATE listings SET status=? WHERE id=? AND status=? AND is_primary=0'
     ).bind(status,id,'pending').run();
 
     return json({ok:true});
