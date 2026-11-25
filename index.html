@@ -3,26 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Homeoffice-Teilzeit: Stellenangebot Mitarbeiter/in (m/w/d) im Homeoffice Minijob Teilzeit Nebenjob deutschlandweit. Flexible Arbeit im Online-Verkauf.">
+  <meta name="description" content="Homeoffice-Teilzeit: Entdecke aktuelle Stellenangebote, Minijobs und Nebenjobs im Homeoffice deutschlandweit.">
   <meta name="robots" content="index,follow">
-  <title>Mitarbeiter/in (m/w/d) im Homeoffice Minijob Teilzeit Nebenjob Deutschlandweit | Homeoffice-Teilzeit</title>
+  <title>Stellenangebote im Homeoffice deutschlandweit | Homeoffice-Teilzeit</title>
   <link rel="canonical" href="https://homeoffice-teilzeit-portal.pages.dev/">
   <link rel="stylesheet" href="style.css">
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"JobPosting",
-    "title":"Mitarbeiter/in (m/w/d) im Homeoffice Minijob Teilzeit Nebenjob Deutschlandweit",
-    "description":"100 % Homeoffice deutschlandweit. Aufgaben im Online-Verkauf von Haushalts- und Küchengeräten, Erstellung von Verkaufsanzeigen und schriftliche Kundenkommunikation.",
-    "datePosted":"2026-11-23",
-    "employmentType":["PART_TIME","CONTRACTOR"],
-    "hiringOrganization":{"@type":"Organization","name":"Lina Soung"},
-    "jobLocationType":"TELECOMMUTE",
-    "applicantLocationRequirements":{"@type":"Country","name":"Deutschland"},
-    "directApply":false
-  }
-  </script>
 
   <style>
     .visitor-section{margin:28px auto 8px;text-align:center;padding:18px 12px}
@@ -46,6 +31,8 @@
 
     .primary-loading{padding:20px;text-align:center}
     .primary-job-card{margin-top:20px}
+    .detail-link{display:inline-block;margin-top:16px;text-decoration:none}
+    .public-listing{margin-bottom:24px}
 
     @media(max-width:600px){
       .contact-form{padding:16px}
@@ -57,7 +44,7 @@
 
 <body>
 <header class="site-header">
-  <a class="brand" href="index.html" aria-label="Homeoffice-Teilzeit Startseite">
+  <a class="brand" href="/" aria-label="Homeoffice-Teilzeit Startseite">
     <span class="brand-mark">H</span>
     <span>Homeoffice-<strong>Teilzeit</strong></span>
   </a>
@@ -72,7 +59,7 @@
     <div class="eyebrow">Arbeiten von überall in Deutschland</div>
     <h1>Arbeiten, wo das Leben stattfindet.</h1>
     <p>Entdecke eine flexible Tätigkeit im Homeoffice – ganz ohne täglichen Arbeitsweg.</p>
-    <a class="button" href="#stellenangebot">Stellenangebot ansehen</a>
+    <a class="button" href="#stellenangebot">Stellenangebote ansehen</a>
   </section>
 
   <section class="content" id="stellenangebot">
@@ -92,7 +79,7 @@
   <section class="info" id="arbeitgeber">
     <div class="eyebrow">Homeoffice-Teilzeit</div>
     <h2>Flexibel arbeiten. Deutschlandweit.</h2>
-    <p>Diese Stellenanzeige wird vom Arbeitgeber bereitgestellt. Bewerbungen können direkt über das Formular auf dieser Seite gesendet werden.</p>
+    <p>Entdecke aktuelle Stellenanzeigen. Bewerbungen können direkt über das jeweilige Kontaktformular gesendet werden.</p>
   </section>
 
   <section class="visitor-section" aria-label="Besucherzähler">
@@ -109,7 +96,7 @@
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Community-Anzeigen</div>
-      <h2 id="anzeigen-title">Stellenanzeigen</h2>
+      <h2 id="anzeigen-title">Weitere Stellenanzeigen</h2>
       <p>Hier erscheinen Anzeigen nach Prüfung und Freigabe.</p>
     </div>
     <div id="approved-listings" aria-live="polite">
@@ -186,7 +173,7 @@
 
 <script>
 function esc(v){
-  return String(v||'').replace(/[&<>"']/g,c=>({
+  return String(v ?? '').replace(/[&<>"']/g,c=>({
     '&':'&amp;',
     '<':'&lt;',
     '>':'&gt;',
@@ -203,7 +190,7 @@ function hideEmails(v){
   );
 }
 
-/* Kontaktformular für Hauptanzeige und Community-Anzeigen */
+/* Kontaktformular für alle Anzeigen */
 function contactForm(subject){
   return `
     <form class="contact-form dynamic-contact-form">
@@ -235,7 +222,7 @@ function contactForm(subject){
   `;
 }
 
-/* Hauptanzeige und Community-Anzeigen aus der Datenbank laden */
+/* Anzeigen aus der Datenbank laden */
 (async function(){
   const primaryList = document.getElementById('primary-listing');
   const list = document.getElementById('approved-listings');
@@ -248,8 +235,10 @@ function contactForm(subject){
       throw new Error(data.error || 'Anzeigen konnten nicht geladen werden.');
     }
 
+    /* Hauptanzeige mit eigenem Detailseiten-Link */
     if (data.primary) {
       const x = data.primary;
+      const detailUrl = '/stellenangebot/' + Number(x.id);
 
       primaryList.innerHTML = `
         <article class="job-card primary-job-card">
@@ -265,8 +254,11 @@ function contactForm(subject){
           </p>
 
           <div class="job-body">
-            <p>${hideEmails(x.description).replace(/\n/g,'<br>')}</p>
-            ${contactForm('Bewerbung zur Hauptanzeige: ' + x.title)}
+            <p>${hideEmails(x.description).replace(/\r?\n/g,'<br>')}</p>
+
+            <a class="button detail-link" href="${detailUrl}">
+              Stellenangebot vollständig ansehen
+            </a>
           </div>
         </article>
       `;
@@ -274,18 +266,27 @@ function contactForm(subject){
       primaryList.innerHTML = '<p>Aktuell ist keine Hauptanzeige vorhanden.</p>';
     }
 
+    /* Weitere freigegebene Anzeigen mit eigenen Detailseiten */
     if (!data.items || !data.items.length) {
       list.innerHTML = '<p>Noch keine weiteren freigegebenen Anzeigen.</p>';
     } else {
-      list.innerHTML = data.items.map(x => `
-        <article class="public-listing">
-          <h3>${esc(x.title)}</h3>
-          <p><strong>${esc(x.category)}</strong> · ${esc(x.location)}</p>
-          <p>${hideEmails(x.description).replace(/\n/g,'<br>')}</p>
-          ${contactForm('Anfrage zur Anzeige: ' + x.title)}
-        </article>
-      `).join('');
+      list.innerHTML = data.items.map(x => {
+        const detailUrl = '/stellenangebot/' + Number(x.id);
+
+        return `
+          <article class="public-listing">
+            <h3>${esc(x.title)}</h3>
+            <p><strong>${esc(x.category)}</strong> · ${esc(x.location)}</p>
+            <p>${hideEmails(x.description).replace(/\r?\n/g,'<br>')}</p>
+
+            <a class="button detail-link" href="${detailUrl}">
+              Stellenangebot vollständig ansehen
+            </a>
+          </article>
+        `;
+      }).join('');
     }
+
   } catch(e) {
     primaryList.innerHTML = '<p>Die Hauptanzeige konnte gerade nicht geladen werden.</p>';
     list.innerHTML = '<p>Anzeigen konnten gerade nicht geladen werden.</p>';
@@ -320,8 +321,10 @@ document.addEventListener('submit',async e=>{
 
     form.reset();
     status.textContent = 'Vielen Dank! Deine Nachricht wurde erfolgreich gesendet.';
+
   } catch(error) {
     status.textContent = error.message || 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.';
+
   } finally {
     button.disabled = false;
   }
@@ -357,8 +360,10 @@ document.getElementById('listing-form').addEventListener('submit',async e=>{
 
     f.reset();
     status.textContent = 'Danke! Deine Anzeige wurde eingereicht und wartet auf Freigabe.';
+
   } catch(err) {
     status.textContent = err.message || 'Fehler beim Senden. Bitte später erneut versuchen.';
+
   } finally {
     b.disabled = false;
   }
