@@ -14,8 +14,20 @@ export async function onRequestPost({request,env}) {
       return json({error:'Ungültige Anzeige'},400);
     }
 
-    if (!['approve','reject'].includes(action)) {
+    if (!['approve','reject','delete'].includes(action)) {
       return json({error:'Ungültige Entscheidung'},400);
+    }
+
+    if (action === 'delete') {
+      const result = await env.DB.prepare(
+        "DELETE FROM listings WHERE id=? AND status='approved'"
+      ).bind(id).run();
+
+      if (!result.meta || result.meta.changes === 0) {
+        return json({error:'Anzeige nicht gefunden'},404);
+      }
+
+      return json({ok:true});
     }
 
     const status = action === 'approve' ? 'approved' : 'rejected';
