@@ -4,7 +4,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Anzeigen freigeben | Admin</title>
+  <title>Anzeigen verwalten | Admin</title>
   <link rel="stylesheet" href="style.css">
 
   <style>
@@ -25,30 +25,54 @@
       margin: 16px 0;
     }
 
-    .admin-card button {
+    .admin-card button, .admin-form button {
       padding: 10px 14px;
       margin: 8px 8px 0 0;
+      cursor: pointer;
     }
 
-    .login {
+    .login, .admin-form {
       display: grid;
       gap: 12px;
-      max-width: 420px;
+      max-width: 600px;
     }
 
-    .login input {
+    input, textarea {
+      box-sizing: border-box;
+      width: 100%;
       padding: 12px;
+      margin-top: 5px;
+    }
+
+    textarea {
+      min-height: 150px;
+      font: inherit;
+    }
+
+    .admin-form {
+      border: 1px solid #bbb;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+
+    .edit-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    [hidden] {
+      display: none !important;
     }
   </style>
 </head>
 
 <body>
   <main class="admin-wrap">
-    <h1>Anzeige-Freigabe</h1>
+    <h1>Anzeige-Verwaltung</h1>
 
-    <p>
-      Dieser Bereich ist nur für die Website-Betreiberin.
-    </p>
+    <p>Dieser Bereich ist nur für die Website-Betreiberin.</p>
 
     <form id="login" class="login">
       <label>
@@ -60,11 +84,48 @@
           autocomplete="current-password"
         >
       </label>
-
       <button type="submit">Anmelden</button>
     </form>
 
     <p id="status" role="status"></p>
+
+    <section id="editor" hidden>
+      <h2>Anzeige bearbeiten</h2>
+
+      <form id="editForm" class="admin-form">
+        <input type="hidden" name="id">
+
+        <label>
+          Titel
+          <input name="title" required minlength="4" maxlength="100">
+        </label>
+
+        <label>
+          Kategorie
+          <input name="category" required maxlength="100">
+        </label>
+
+        <label>
+          Standort
+          <input name="location" required minlength="2" maxlength="100">
+        </label>
+
+        <label>
+          Beschreibung
+          <textarea name="description" required minlength="20" maxlength="5000"></textarea>
+        </label>
+
+        <label>
+          E-Mail-Adresse
+          <input name="email" type="email" required maxlength="254">
+        </label>
+
+        <div class="edit-actions">
+          <button type="submit">Änderungen speichern</button>
+          <button type="button" id="cancelEdit">Abbrechen</button>
+        </div>
+      </form>
+    </section>
 
     <section id="queue"></section>
 
@@ -76,32 +137,29 @@
     const queue = document.getElementById('queue');
     const login = document.getElementById('login');
     const logout = document.getElementById('logout');
+    const editor = document.getElementById('editor');
+    const editForm = document.getElementById('editForm');
+
+    let items = [];
 
     login.addEventListener('submit', async e => {
       e.preventDefault();
-
       status.textContent = 'Anmeldung …';
 
       try {
         const r = await fetch('/api/admin/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             password: new FormData(login).get('password')
           })
         });
 
         const d = await r.json();
-
-        if (!r.ok) {
-          throw Error(d.error);
-        }
+        if (!r.ok) throw Error(d.error || 'Anmeldung fehlgeschlagen');
 
         login.hidden = true;
         logout.hidden = false;
-
         await load();
       } catch (err) {
         status.textContent = err.message;
@@ -113,39 +171,34 @@
         const r = await fetch('/api/admin/listings');
         const d = await r.json();
 
-        if (!r.ok) {
-          throw Error(d.error);
-        }
+        if (!r.ok) throw Error(d.error || 'Anzeigen konnten nicht geladen werden');
 
-        queue.innerHTML = d.items.length
-          ? d.items.map(x => `
+        items = d.items || [];
+
+        queue.innerHTML = items.length
+          ? items.map(x => `
               <article class="admin-card">
                 <h2>${esc(x.title)}</h2>
-
-                <p>
-                  ${esc(x.category)} · ${esc(x.location)}
-                </p>
-
-                <p>${esc(x.description)}</p>
-
+                <p>${esc(x.category)} · ${esc(x.location)}</p>
+                <p>${esc(x.description).replace(/\n/g, '<br>')}</p>
                 <p>${esc(x.email)}</p>
+                <p>Status: ${esc(x.status || 'pending')}</p>
 
-                <button
-                  data-id="${x.id}"
-                  data-action="approve"
-                >
-                  Freigeben
+                <button type="button" data-edit="${Number(x.id)}">
+                  Bearbeiten
                 </button>
 
-                <button
-                  data-id="${x.id}"
-                  data-action="reject"
-                >
-                  Ablehnen
-                </button>
+                ${x.status === 'pending' ? `
+                  <button type="button" data-id="${Number(x.id)}" data-action="approve">
+                    Freigeben
+                  </button>
+                  <button type="button" data-id="${Number(x.id)}" data-action="reject">
+                    Ablehnen
+                  </button>
+                ` : ''}
               </article>
             `).join('')
-          : '<p>Keine Anzeigen zur Prüfung.</p>';
+          : '<p>Keine Anzeigen vorhanden.</p>';
 
         status.textContent = '';
       } catch (e) {
@@ -154,8 +207,25 @@
     }
 
     queue.addEventListener('click', async e => {
-      const b = e.target.closest('button[data-id]');
+      const editButton = e.target.closest('button[data-edit]');
 
+      if (editButton) {
+        const item = items.find(x => Number(x.id) === Number(editButton.dataset.edit));
+        if (!item) return;
+
+        editForm.elements.id.value = item.id;
+        editForm.elements.title.value = item.title || '';
+        editForm.elements.category.value = item.category || '';
+        editForm.elements.location.value = item.location || '';
+        editForm.elements.description.value = item.description || '';
+        editForm.elements.email.value = item.email || '';
+
+        editor.hidden = false;
+        editor.scrollIntoView({behavior: 'smooth'});
+        return;
+      }
+
+      const b = e.target.closest('button[data-id]');
       if (!b) return;
 
       b.disabled = true;
@@ -163,9 +233,7 @@
       try {
         const r = await fetch('/api/admin/decision', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             id: Number(b.dataset.id),
             action: b.dataset.action
@@ -173,10 +241,7 @@
         });
 
         const d = await r.json();
-
-        if (!r.ok) {
-          throw Error(d.error);
-        }
+        if (!r.ok) throw Error(d.error || 'Aktion fehlgeschlagen');
 
         await load();
       } catch (err) {
@@ -185,14 +250,43 @@
       }
     });
 
-    logout.addEventListener('click', async () => {
-      await fetch('/api/admin/logout', {
-        method: 'POST'
-      });
+    editForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      status.textContent = 'Änderungen werden gespeichert …';
 
+      const data = Object.fromEntries(new FormData(editForm).entries());
+      data.id = Number(data.id);
+
+      try {
+        const r = await fetch('/api/admin/edit', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        });
+
+        const d = await r.json();
+        if (!r.ok) throw Error(d.error || 'Speichern fehlgeschlagen');
+
+        editor.hidden = true;
+        status.textContent = 'Änderungen erfolgreich gespeichert.';
+        await load();
+      } catch (err) {
+        status.textContent = err.message;
+      }
+    });
+
+    document.getElementById('cancelEdit').addEventListener('click', () => {
+      editor.hidden = true;
+      editForm.reset();
+    });
+
+    logout.addEventListener('click', async () => {
+      await fetch('/api/admin/logout', {method: 'POST'});
       login.hidden = false;
       logout.hidden = true;
+      editor.hidden = true;
       queue.innerHTML = '';
+      items = [];
       status.textContent = 'Abgemeldet.';
     });
 
