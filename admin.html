@@ -83,6 +83,16 @@
     [hidden] {
       display: none !important;
     }
+
+    .primary-label {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #174ea6;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -241,6 +251,12 @@
         ? filtered.map(x => `
             <article class="admin-card">
               <h2>${esc(x.title)}</h2>
+
+              ${Number(x.is_primary) === 1
+                ? '<p><span class="primary-label">Hauptanzeige</span></p>'
+                : ''
+              }
+
               <p>${esc(x.category)} · ${esc(x.location)}</p>
               <p>${esc(x.description).replace(/\n/g, '<br>')}</p>
               <p>${esc(x.email)}</p>
@@ -257,7 +273,7 @@
                 <button type="button" data-id="${Number(x.id)}" data-action="reject">
                   Ablehnen
                 </button>
-              ` : `
+              ` : Number(x.is_primary) !== 1 ? `
                 <button
                   type="button"
                   data-id="${Number(x.id)}"
@@ -266,7 +282,7 @@
                 >
                   Löschen
                 </button>
-              `}
+              ` : ''}
             </article>
           `).join('')
         : '<p>Keine passenden Anzeigen gefunden.</p>';
