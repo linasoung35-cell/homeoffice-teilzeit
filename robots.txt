@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://homeoffice-teilzeit.pages.dev/sitemap.xml
+
+Sitemap: https://homeoffice-teilzeit-portal.pages.dev/sitemap.xml
