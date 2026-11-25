@@ -62,6 +62,24 @@
       gap: 8px;
     }
 
+    .search-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 180px;
+      margin: 0;
+    }
+
+    .search-box button {
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
     [hidden] {
       display: none !important;
     }
@@ -88,6 +106,22 @@
     </form>
 
     <p id="status" role="status"></p>
+
+    <section id="management" hidden>
+      <h2>Anzeigen suchen</h2>
+
+      <div class="search-box">
+        <input
+          type="search"
+          id="search"
+          placeholder="Titel, Kategorie, Standort oder Beschreibung ..."
+          aria-label="Anzeigen durchsuchen"
+        >
+        <button type="button" id="resetSearch">Zurücksetzen</button>
+      </div>
+
+      <p id="resultCount"></p>
+    </section>
 
     <section id="editor" hidden>
       <h2>Anzeige bearbeiten</h2>
@@ -139,6 +173,9 @@
     const logout = document.getElementById('logout');
     const editor = document.getElementById('editor');
     const editForm = document.getElementById('editForm');
+    const management = document.getElementById('management');
+    const search = document.getElementById('search');
+    const resultCount = document.getElementById('resultCount');
 
     let items = [];
 
@@ -160,6 +197,7 @@
 
         login.hidden = true;
         logout.hidden = false;
+        management.hidden = false;
         await load();
       } catch (err) {
         status.textContent = err.message;
@@ -174,46 +212,73 @@
         if (!r.ok) throw Error(d.error || 'Anzeigen konnten nicht geladen werden');
 
         items = d.items || [];
-
-        queue.innerHTML = items.length
-          ? items.map(x => `
-              <article class="admin-card">
-                <h2>${esc(x.title)}</h2>
-                <p>${esc(x.category)} · ${esc(x.location)}</p>
-                <p>${esc(x.description).replace(/\n/g, '<br>')}</p>
-                <p>${esc(x.email)}</p>
-                <p>Status: ${esc(x.status || 'pending')}</p>
-
-                <button type="button" data-edit="${Number(x.id)}">
-                  Bearbeiten
-                </button>
-
-                ${x.status === 'pending' ? `
-  <button type="button" data-id="${Number(x.id)}" data-action="approve">
-    Freigeben
-  </button>
-  <button type="button" data-id="${Number(x.id)}" data-action="reject">
-    Ablehnen
-  </button>
-` : `
-  <button
-    type="button"
-    data-id="${Number(x.id)}"
-    data-action="delete"
-    style="background:#b91c1c;color:white"
-  >
-    Löschen
-  </button>
-`}
-              </article>
-            `).join('')
-          : '<p>Keine Anzeigen vorhanden.</p>';
+        renderItems();
 
         status.textContent = '';
       } catch (e) {
         status.textContent = e.message;
       }
     }
+
+    function renderItems() {
+      const term = search.value.trim().toLocaleLowerCase('de');
+
+      const filtered = items.filter(x => {
+        const content = [
+          x.title,
+          x.category,
+          x.location,
+          x.description
+        ].join(' ').toLocaleLowerCase('de');
+
+        return content.includes(term);
+      });
+
+      resultCount.textContent =
+        filtered.length + ' von ' + items.length + ' Anzeigen';
+
+      queue.innerHTML = filtered.length
+        ? filtered.map(x => `
+            <article class="admin-card">
+              <h2>${esc(x.title)}</h2>
+              <p>${esc(x.category)} · ${esc(x.location)}</p>
+              <p>${esc(x.description).replace(/\n/g, '<br>')}</p>
+              <p>${esc(x.email)}</p>
+              <p>Status: ${esc(x.status || 'pending')}</p>
+
+              <button type="button" data-edit="${Number(x.id)}">
+                Bearbeiten
+              </button>
+
+              ${x.status === 'pending' ? `
+                <button type="button" data-id="${Number(x.id)}" data-action="approve">
+                  Freigeben
+                </button>
+                <button type="button" data-id="${Number(x.id)}" data-action="reject">
+                  Ablehnen
+                </button>
+              ` : `
+                <button
+                  type="button"
+                  data-id="${Number(x.id)}"
+                  data-action="delete"
+                  style="background:#b91c1c;color:white"
+                >
+                  Löschen
+                </button>
+              `}
+            </article>
+          `).join('')
+        : '<p>Keine passenden Anzeigen gefunden.</p>';
+    }
+
+    search.addEventListener('input', renderItems);
+
+    document.getElementById('resetSearch').addEventListener('click', () => {
+      search.value = '';
+      renderItems();
+      search.focus();
+    });
 
     queue.addEventListener('click', async e => {
       const editButton = e.target.closest('button[data-edit]');
@@ -235,15 +300,15 @@
       }
 
       const b = e.target.closest('button[data-id]');
-if (!b) return;
+      if (!b) return;
 
-if (b.dataset.action === 'delete') {
-  if (!confirm('Möchtest du diese Anzeige wirklich dauerhaft löschen?')) {
-    return;
-  }
-}
+      if (b.dataset.action === 'delete') {
+        if (!confirm('Möchtest du diese Anzeige wirklich dauerhaft löschen?')) {
+          return;
+        }
+      }
 
-b.disabled = true;
+      b.disabled = true;
 
       try {
         const r = await fetch('/api/admin/decision', {
@@ -283,6 +348,7 @@ b.disabled = true;
         if (!r.ok) throw Error(d.error || 'Speichern fehlgeschlagen');
 
         editor.hidden = true;
+        editForm.reset();
         status.textContent = 'Änderungen erfolgreich gespeichert.';
         await load();
       } catch (err) {
@@ -299,9 +365,12 @@ b.disabled = true;
       await fetch('/api/admin/logout', {method: 'POST'});
       login.hidden = false;
       logout.hidden = true;
+      management.hidden = true;
       editor.hidden = true;
       queue.innerHTML = '';
       items = [];
+      search.value = '';
+      resultCount.textContent = '';
       status.textContent = 'Abgemeldet.';
     });
 
