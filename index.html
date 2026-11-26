@@ -3,20 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Homeoffice-Teilzeit: Entdecke aktuelle Stellenangebote, Minijobs und Nebenjobs im Homeoffice deutschlandweit.">
+  <meta name="description" content="Homeoffice-Stellenangebot im Online-Verkauf und in der schriftlichen Kundenbetreuung. Flexible Tätigkeit deutschlandweit mit Festvergütung und Verkaufsprovision.">
   <meta name="robots" content="index,follow">
-  <title>Stellenangebote im Homeoffice deutschlandweit | Homeoffice-Teilzeit</title>
+  <title>Mitarbeiterin im Homeoffice – Online-Verkauf & Kundenbetreuung | Homeoffice-Teilzeit</title>
   <link rel="canonical" href="https://homeoffice-teilzeit-portal.pages.dev/">
   <link rel="stylesheet" href="style.css">
 
   <style>
     .visitor-section{margin:28px auto 8px;text-align:center;padding:18px 12px}
-    .visitor-counter{display:inline-flex;align-items:center;gap:14px;padding:13px 20px;border:1px solid #d8c18a;border-radius:10px;background:#fffdf8;color:#24211b;box-shadow:0 4px 18px rgba(0,0,0,.06)}
-    .visitor-icon{font-size:24px;color:#ad8740}
-    .visitor-counter strong{display:block;font-size:24px;line-height:1.2}
-    .visitor-counter small{display:block;font-size:12px;color:#6d675b;margin-top:3px}
     .visitor-note{max-width:620px;margin:9px auto 0;font-size:12px;color:#777}
-
+    .job-detail{max-width:900px;margin:28px auto;padding:26px;border:1px solid #e5dfd2;border-radius:14px;background:#fff}
+    .job-detail h2{margin-top:0}
+    .job-detail h3{margin:25px 0 10px}
+    .job-detail p,.job-detail li{line-height:1.7}
+    .job-detail ul{padding-left:22px}
+    .job-meta{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+    .job-meta span{display:inline-block;padding:7px 11px;border:1px solid #e5dfd2;border-radius:20px;background:#fffdf8;font-size:14px}
+    .pay-list{padding:16px 20px;background:#fffdf8;border-left:4px solid #ad8740;border-radius:8px}
     .contact-form{margin-top:22px;padding:22px;border:1px solid #e5dfd2;border-radius:12px;background:#fffdf9}
     .contact-form h3{margin-top:0}
     .contact-form .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -28,13 +31,15 @@
     .contact-form button:disabled{opacity:.65;cursor:wait}
     .contact-form-status{min-height:1.4em;margin:12px 0 0;font-size:14px}
     .contact-form .hp-field{position:absolute!important;left:-5000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
-
-    .primary-loading{padding:20px;text-align:center}
-    .primary-job-card{margin-top:20px}
-    .detail-link{display:inline-block;margin-top:16px;text-decoration:none}
-    .public-listing{margin-bottom:24px}
-
+    .section-wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
+    .listing-form{display:grid;gap:14px;max-width:700px}
+    .listing-form label{display:block;font-weight:600}
+    .listing-form input,.listing-form select,.listing-form textarea{display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:12px;border:1px solid #d7d2c8;border-radius:8px;font:inherit}
+    .listing-form button{width:max-content;padding:12px 18px;border:0;border-radius:8px;cursor:pointer}
+    .listing-form .hp-field{position:absolute!important;left:-5000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+    .public-listing{margin:0 0 20px;padding:18px;border:1px solid #e5dfd2;border-radius:10px;background:#fff}
     @media(max-width:600px){
+      .job-detail{margin:16px 12px;padding:18px}
       .contact-form{padding:16px}
       .contact-form .form-grid{grid-template-columns:1fr}
       .contact-form .full-width{grid-column:auto}
@@ -50,36 +55,100 @@
   </a>
   <nav>
     <a href="#stellenangebot">Stellenangebot</a>
-    <a href="#arbeitgeber">Für Bewerber</a>
+    <a href="#arbeitgeber">Über die Tätigkeit</a>
+    <a href="#anzeigen">Weitere Anzeigen</a>
   </nav>
 </header>
 
 <main>
   <section class="hero">
     <div class="eyebrow">Arbeiten von überall in Deutschland</div>
-    <h1>Arbeiten, wo das Leben stattfindet.</h1>
-    <p>Entdecke eine flexible Tätigkeit im Homeoffice – ganz ohne täglichen Arbeitsweg.</p>
-    <a class="button" href="#stellenangebot">Stellenangebote ansehen</a>
+    <h1>Flexibel arbeiten – ganz bequem von zu Hause.</h1>
+    <p>Unterstützung im Online-Verkauf und in der schriftlichen Kundenbetreuung eines bestehenden Handelsgeschäfts.</p>
+    <a class="button" href="#stellenangebot">Stellenangebot ansehen</a>
   </section>
 
   <section class="content" id="stellenangebot">
     <div class="section-heading">
       <div>
         <div class="eyebrow">Aktuelle Stellenanzeige</div>
-        <h2>Deine nächste Möglichkeit im Homeoffice</h2>
+        <h2>Mitarbeiterin im Homeoffice – Online-Verkauf und Kundenbetreuung</h2>
       </div>
-      <span class="status">Stellenangebot</span>
+      <span class="status">Aktuelles Stellenangebot</span>
     </div>
 
-    <div id="primary-listing" aria-live="polite">
-      <p class="primary-loading">Stellenanzeige wird geladen …</p>
-    </div>
+    <article class="job-detail">
+      <div class="job-meta">
+        <span>100 % Homeoffice</span>
+        <span>Deutschlandweit</span>
+        <span>Flexible Zeiteinteilung</span>
+        <span>Quereinstieg willkommen</span>
+      </div>
+
+      <p>Zur Unterstützung meines bestehenden Einzelhandels- und Online-Geschäfts suche ich eine zuverlässige und motivierte Mitarbeiterin, die mich beim Online-Verkauf und bei der schriftlichen Kundenbetreuung unterstützt.</p>
+      <p>Wenn Sie gerne mit Menschen kommunizieren, sorgfältig arbeiten und Freude am Umgang mit Kunden haben, könnte diese Tätigkeit gut zu Ihnen passen.</p>
+
+      <h3>Über mich</h3>
+      <p>Mein Name ist Lina. Ich bin gelernte Großhandelskauffrau und seit vielen Jahren im Online-Handel tätig. In dieser Zeit habe ich mir ein bestehendes Online-Geschäft sowie eine Community mit über 60.000 Followern aufgebaut.</p>
+      <p>Da mein Geschäft weiter wächst, suche ich eine zuverlässige Mitarbeiterin, die mich langfristig im täglichen Online-Verkauf unterstützt.</p>
+
+      <h3>Ihre Aufgaben</h3>
+      <ul>
+        <li>Verkaufsanzeigen mit fertigen Vorlagen erstellen und veröffentlichen</li>
+        <li>Kundenanfragen schriftlich und freundlich beantworten</li>
+        <li>Interessentinnen bei Fragen zu den Produkten weiterhelfen</li>
+        <li>Nachrichten bearbeiten und Kundenkontakte pflegen</li>
+        <li>Kaufinteressentinnen während des Kaufvorgangs begleiten</li>
+      </ul>
+      <p><strong>Wichtig:</strong> Alle Texte, Produktbilder, Preise und notwendigen Informationen stelle ich Ihnen zur Verfügung. Sie müssen keine eigenen Anzeigen oder Inhalte erstellen.</p>
+
+      <h3>Ihre Vergütung</h3>
+      <div class="pay-list">
+        <ul>
+          <li><strong>603 € monatliche Festvergütung</strong>, unabhängig von der Anzahl der Verkäufe</li>
+          <li>Zusätzlich <strong>10 % Provision</strong> für jeden erfolgreich abgeschlossenen Verkauf</li>
+          <li><strong>300 € Sonderbonus</strong> bei drei erfolgreich abgeschlossenen Thermomix-TM7-Verkäufen</li>
+        </ul>
+        <p>Bei einer guten und zuverlässigen Zusammenarbeit besteht später die Möglichkeit, die monatliche Festvergütung auf bis zu 1.500 € zu erhöhen.</p>
+      </div>
+
+      <h3>Ihre Vorteile</h3>
+      <ul>
+        <li>100 % Homeoffice – Sie können von überall in Deutschland arbeiten</li>
+        <li>Freie und flexible Zeiteinteilung</li>
+        <li>Keine festen täglichen Arbeitszeiten</li>
+        <li>Keine festgelegte Mindeststundenzahl</li>
+        <li>Keine Vorkenntnisse oder Berufserfahrung notwendig</li>
+        <li>Keine Telefonate oder Kaltakquise</li>
+        <li>Keine Investitions- oder Einstiegskosten</li>
+        <li>Alle benötigten Arbeitsmaterialien werden bereitgestellt</li>
+        <li>Versand und Logistik übernehme ich</li>
+        <li>Eine langfristige Zusammenarbeit ist erwünscht</li>
+      </ul>
+
+      <h3>Das sollten Sie mitbringen</h3>
+      <ul>
+        <li>Sie sind mindestens 18 Jahre alt</li>
+        <li>Sie haben gute Deutschkenntnisse in Wort und Schrift</li>
+        <li>Sie kommunizieren freundlich und höflich mit Kunden</li>
+        <li>Sie arbeiten zuverlässig, sorgfältig und selbstständig</li>
+        <li>Sie besitzen ein Smartphone, Tablet oder einen Computer mit Internetzugang</li>
+      </ul>
+      <p>Quereinsteigerinnen sind herzlich willkommen. Die Tätigkeit eignet sich besonders für Personen, die flexibel von zu Hause aus arbeiten und sich etwas dazuverdienen möchten. Wichtiger als bisherige Berufserfahrung sind Motivation, Zuverlässigkeit und eine sorgfältige Arbeitsweise.</p>
+      <p><strong>Bitte beachten Sie:</strong> Kundenanfragen sollten möglichst zeitnah beantwortet werden. Wie viel Zeit dafür benötigt wird, hängt von der Anzahl der eingehenden Nachrichten ab und kann deshalb nicht genau im Voraus festgelegt werden.</p>
+
+      <h3>Interesse geweckt?</h3>
+      <p>Wenn Sie sich angesprochen fühlen und gerne mit mir zusammenarbeiten möchten, freue ich mich auf Ihre Nachricht. Ein unverbindliches Probearbeiten ist nach Absprache möglich.</p>
+      <p>Liebe Grüße<br><strong>Lina</strong></p>
+
+      <div id="job-contact"></div>
+    </article>
   </section>
 
   <section class="info" id="arbeitgeber">
     <div class="eyebrow">Homeoffice-Teilzeit</div>
     <h2>Flexibel arbeiten. Deutschlandweit.</h2>
-    <p>Entdecke aktuelle Stellenanzeigen. Bewerbungen können direkt über das jeweilige Kontaktformular gesendet werden.</p>
+    <p>Dieses Stellenangebot bietet eine Tätigkeit im Online-Verkauf und in der schriftlichen Kundenbetreuung. Die Produktinformationen, Vorlagen und Bilder werden bereitgestellt; Versand und Logistik werden durch die Arbeitgeberin organisiert.</p>
   </section>
 
   <section class="visitor-section" aria-label="Besucherzähler">
@@ -93,7 +162,7 @@
 </main>
 
 <section id="anzeigen" aria-labelledby="anzeigen-title">
-  <div class="wrap">
+  <div class="section-wrap">
     <div class="section-head">
       <div class="eyebrow">Community-Anzeigen</div>
       <h2 id="anzeigen-title">Weitere Stellenanzeigen</h2>
@@ -106,7 +175,7 @@
 </section>
 
 <section id="anzeige-aufgeben" aria-labelledby="submit-title">
-  <div class="wrap">
+  <div class="section-wrap">
     <div class="section-head">
       <div class="eyebrow">Kostenlos einreichen</div>
       <h2 id="submit-title">Anzeige aufgeben</h2>
@@ -182,128 +251,68 @@ function esc(v){
   }[c]));
 }
 
-/* E-Mail-Adressen in öffentlichen Beschreibungstexten ausblenden */
-function hideEmails(v){
-  return esc(v).replace(
-    /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,
-    '[E-Mail-Adresse ausgeblendet]'
-  );
-}
-
-/* Kontaktformular für alle Anzeigen */
 function contactForm(subject){
   return `
     <form class="contact-form dynamic-contact-form">
       <h3>Kontakt / Bewerbung</h3>
-
       <input type="hidden" name="access_key" value="22d33330-6e1b-4706-920c-6ae9ef01c109">
       <input type="hidden" name="subject" value="${esc(subject)}">
       <input type="hidden" name="from_name" value="Homeoffice-Teilzeit Webseite">
-
       <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off">
-
       <div class="form-grid">
-        <label>Dein Name *
+        <label>Ihr Name *
           <input type="text" name="name" required maxlength="120" placeholder="Vor- und Nachname">
         </label>
-
-        <label>Deine E-Mail-Adresse *
+        <label>Ihre E-Mail-Adresse *
           <input type="email" name="email" required maxlength="254" placeholder="name@beispiel.de">
         </label>
-
-        <label class="full-width">Nachricht *
-          <textarea name="message" required maxlength="5000" placeholder="Schreibe hier deine Nachricht oder Bewerbung …"></textarea>
+        <label class="full-width">Ihre Nachricht *
+          <textarea name="message" required maxlength="5000" placeholder="Schreiben Sie hier Ihre Nachricht oder Bewerbung …"></textarea>
         </label>
       </div>
-
       <button class="button" type="submit">Nachricht senden</button>
       <p class="contact-form-status" role="status" aria-live="polite"></p>
     </form>
   `;
 }
 
-/* Anzeigen aus der Datenbank laden */
-(async function(){
-  const primaryList = document.getElementById('primary-listing');
-  const list = document.getElementById('approved-listings');
+document.getElementById('job-contact').innerHTML =
+  contactForm('Bewerbung – Online-Verkauf im Homeoffice');
 
+/* Freigegebene Community-Anzeigen laden */
+(async function(){
+  const list = document.getElementById('approved-listings');
   try {
     const r = await fetch('/api/listings');
     const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Anzeigen konnten nicht geladen werden.');
 
-    if (!r.ok) {
-      throw new Error(data.error || 'Anzeigen konnten nicht geladen werden.');
-    }
-
-    /* Hauptanzeige mit eigenem Detailseiten-Link */
-    if (data.primary) {
-      const x = data.primary;
-      const detailUrl = '/stellenangebot/' + Number(x.id);
-
-      primaryList.innerHTML = `
-        <article class="job-card primary-job-card">
-          <div class="job-top">
-            <span class="tag">100 % Homeoffice</span>
-            <span class="tag">Deutschlandweit</span>
-          </div>
-
-          <h2>${esc(x.title)}</h2>
-
-          <p class="lead">
-            ${esc(x.category)} · ${esc(x.location)}
-          </p>
-
-          <div class="job-body">
-            <p>${hideEmails(x.description).replace(/\r?\n/g,'<br>')}</p>
-
-            <a class="button detail-link" href="${detailUrl}">
-              Stellenangebot vollständig ansehen
-            </a>
-          </div>
-        </article>
-      `;
-    } else {
-      primaryList.innerHTML = '<p>Aktuell ist keine Hauptanzeige vorhanden.</p>';
-    }
-
-    /* Weitere freigegebene Anzeigen mit eigenen Detailseiten */
     if (!data.items || !data.items.length) {
       list.innerHTML = '<p>Noch keine weiteren freigegebenen Anzeigen.</p>';
-    } else {
-      list.innerHTML = data.items.map(x => {
-        const detailUrl = '/stellenangebot/' + Number(x.id);
-
-        return `
-          <article class="public-listing">
-            <h3>${esc(x.title)}</h3>
-            <p><strong>${esc(x.category)}</strong> · ${esc(x.location)}</p>
-            <p>${hideEmails(x.description).replace(/\r?\n/g,'<br>')}</p>
-
-            <a class="button detail-link" href="${detailUrl}">
-              Stellenangebot vollständig ansehen
-            </a>
-          </article>
-        `;
-      }).join('');
+      return;
     }
 
+    list.innerHTML = data.items.map(x => `
+      <article class="public-listing">
+        <h3>${esc(x.title)}</h3>
+        <p><strong>${esc(x.category)}</strong> · ${esc(x.location)}</p>
+        <p>${esc(x.description).replace(/\r?\n/g,'<br>')}</p>
+        <a class="button detail-link" href="/stellenangebot/${Number(x.id)}">Stellenangebot vollständig ansehen</a>
+      </article>
+    `).join('');
   } catch(e) {
-    primaryList.innerHTML = '<p>Die Hauptanzeige konnte gerade nicht geladen werden.</p>';
-    list.innerHTML = '<p>Anzeigen konnten gerade nicht geladen werden.</p>';
+    list.innerHTML = '<p>Weitere Anzeigen konnten gerade nicht geladen werden.</p>';
   }
 })();
 
-/* Nachrichten aus allen dynamischen Kontaktformularen senden */
+/* Bewerbungsnachrichten senden */
 document.addEventListener('submit',async e=>{
   const form = e.target;
-
   if (!form.matches('.dynamic-contact-form')) return;
-
   e.preventDefault();
 
   const status = form.querySelector('.contact-form-status');
   const button = form.querySelector('button[type="submit"]');
-
   status.textContent = 'Nachricht wird gesendet …';
   button.disabled = true;
 
@@ -312,19 +321,14 @@ document.addEventListener('submit',async e=>{
       method:'POST',
       body:new FormData(form)
     });
-
     const result = await response.json();
-
     if (!response.ok || !result.success) {
       throw new Error(result.message || 'Die Nachricht konnte nicht gesendet werden.');
     }
-
     form.reset();
-    status.textContent = 'Vielen Dank! Deine Nachricht wurde erfolgreich gesendet.';
-
+    status.textContent = 'Vielen Dank! Ihre Nachricht wurde erfolgreich gesendet.';
   } catch(error) {
-    status.textContent = error.message || 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.';
-
+    status.textContent = error.message || 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.';
   } finally {
     button.disabled = false;
   }
@@ -333,11 +337,9 @@ document.addEventListener('submit',async e=>{
 /* Neue Community-Anzeige einreichen */
 document.getElementById('listing-form').addEventListener('submit',async e=>{
   e.preventDefault();
-
   const f = e.currentTarget;
   const status = document.getElementById('listing-form-status');
   const b = f.querySelector('button');
-
   status.textContent = 'Wird gesendet …';
   b.disabled = true;
 
@@ -351,19 +353,12 @@ document.getElementById('listing-form').addEventListener('submit',async e=>{
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify(body)
     });
-
     const d = await r.json();
-
-    if (!r.ok) {
-      throw new Error(d.error || 'Senden fehlgeschlagen');
-    }
-
+    if (!r.ok) throw new Error(d.error || 'Senden fehlgeschlagen');
     f.reset();
     status.textContent = 'Danke! Deine Anzeige wurde eingereicht und wartet auf Freigabe.';
-
   } catch(err) {
     status.textContent = err.message || 'Fehler beim Senden. Bitte später erneut versuchen.';
-
   } finally {
     b.disabled = false;
   }
