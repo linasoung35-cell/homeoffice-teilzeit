@@ -1,5 +1,5 @@
 export async function onRequestGet({ env }) {
-  const baseUrl = 'https://homeoffice-teilzeit-portal.pages.dev';
+  const baseUrl = 'https://homeoffice-teilzeit.pages.dev';
 
   try {
     const { results = [] } = await env.DB.prepare(
